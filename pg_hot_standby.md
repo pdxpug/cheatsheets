@@ -48,7 +48,7 @@ master:
 	- `SELECT pg_switch_xlog();` to verify (check both dirs)
 	- `CREATE ROLE rbatty WITH REPLICATION PASSWORD 'deckard';`
 * change pg_hba.conf as required for access
-	- database name has to be replication!
+	- database name has to be "replication"!
 	- reload
 
 standby:
