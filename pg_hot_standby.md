@@ -40,43 +40,48 @@ pg_hba.conf
 postgres.conf
 recovery.conf (only on the standby)
 ```
+
 master:
-change postgres.conf as noted above
+
+* change postgres.conf as noted above
 	- restart
 	- SELECT pg_switch_xlog(); to verify (check both dirs)
 	- CREATE ROLE rbatty WITH REPLICATION PASSWORD 'deckard';
-change pg_hba.conf as required for access
+* change pg_hba.conf as required for access
 	- database name has to be replication!
 	- reload
 
 standby:
-change postgres.conf as noted above
-check recovery.conf
-create a .pgpass file for access from the master
 
-2.  backup...let's try rsync
+* change postgres.conf as noted above
+* check recovery.conf
+* create a .pgpass file for access from the master
+
+2.  backup...let's try rsync  
 Copy the standby's .conf files somewhere they won't be overwritten
 
 stop the master
 then on the master server, use rsync:
 rsync -av /path/to/pgdata/dir/* ip.of.standby.server:/path/to/pgdata/dir/
 
--a means archive, which preserves symbolic links, among other things.
+-a means archive, which preserves symbolic links, among other things.  
 -v is verbose.
 
 You can also use -e ssh
 
 3.  check your configs on your standby.
 
-4.  and start them up!
+4.  and start them up!  
 standby first
 then master
 
-Check if SR is working:
-ps -ef | grep wal
+Check if SR is working:  
+
+`ps -ef | grep wal`  
 On the master, there should be one wal writer, then one wal sender for each standby
 On the standby, there should be one wal receiver
 
 On the standby:
-SELECT pg_is_in_recovery();
+
+`SELECT pg_is_in_recovery();`  
 Should be 't'
