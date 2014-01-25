@@ -3,8 +3,8 @@ Streaming rep + hot standby on Pg 9.3
 
 Gleaned from the latest docs:
 
-On the master:
---------------
+On the master
+-------------
 * `max_wal_senders` >0, say 5
 * `wal_keep_segments`, dunno (how about 16, this is low traffic)
 * `wal_sender_timeout` just take the default
@@ -16,8 +16,8 @@ On the master:
 
 Note:  the comments in the config file have really improved since v9.
 
-On the standby:
----------------
+On the standby
+--------------
 
 * `hot_standby` on
 * `max_standby_archive_delay` leave as default
