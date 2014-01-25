@@ -5,26 +5,26 @@ Gleaned from the latest docs:
 
 On the master:
 --------------
-* max_wal_senders >0, say 5
-* wal_keep_segments, dunno (how about 16, this is low traffic)
-* wal_sender_timeout just take the default
-* synchronous_standby_names (none, the default - this is disabled & I don't need it)
-* vacuum_defer_cleanup_age 0 (the default, leave it as-is)
-* archive_command	- for the wal shipping part - point it somewhere *other than* pg_xlog, right? :)
-* archive_mode on - for the wal shipping part
-* wal_level hot_standby (I think)
+* `max_wal_senders` >0, say 5
+* `wal_keep_segments`, dunno (how about 16, this is low traffic)
+* `wal_sender_timeout` just take the default
+* `synchronous_standby_names` (none, the default - this is disabled & I don't need it)
+* `vacuum_defer_cleanup_age` 0 (the default, leave it as-is)
+* `archive_command`	- for the wal shipping part - point it somewhere *other than* pg_xlog, right? :) Something like `'cp %p /var/lib/postgresql/archive/%f'`
+* `archive_mode` on - for the wal shipping part
+* `wal_level` hot_standby (I think)
 
 Note:  the comments in the config file have really improved since v9.
 
 On the standby:
 ---------------
 
-* hot_standby on
-* max_standby_archive_delay leave as default
-* max_standby_streaming_delay leave as default
-* wal_receiver_status_interval leave as default
-* hot_standby_feedback I want this on to see what it does
-* wal_receiver_timeout leave as default
+* `hot_standby` on
+* `max_standby_archive_delay` leave as default
+* `max_standby_streaming_delay` leave as default
+* `wal_receiver_status_interval` leave as default
+* `hot_standby_feedback` I want this on to see what it does
+* `wal_receiver_timeout` leave as default
 
 I think the steps are as follows (this process has changed, and the docs don't really have a step-by-step "do [x] if you want [y]" procedure. :P )
 
@@ -35,10 +35,11 @@ I think the steps are as follows (this process has changed, and the docs don't r
 4. Start it up.
 
 1. Files I have to tinker with:
-    pg_hba.conf
-    postgres.conf
-    recovery.conf (only on the standby)
-
+```
+pg_hba.conf
+postgres.conf
+recovery.conf (only on the standby)
+```
 master:
 change postgres.conf as noted above
 	- restart
