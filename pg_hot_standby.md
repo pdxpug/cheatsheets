@@ -45,24 +45,24 @@ master:
 
 * change postgres.conf as noted above
 	- restart
-	- SELECT pg_switch_xlog(); to verify (check both dirs)
-	- CREATE ROLE rbatty WITH REPLICATION PASSWORD 'deckard';
+	- `SELECT pg_switch_xlog();` to verify (check both dirs)
+	- `CREATE ROLE rbatty WITH REPLICATION PASSWORD 'deckard';`
 * change pg_hba.conf as required for access
 	- database name has to be replication!
 	- reload
 
 standby:
 
-* change postgres.conf as noted above
-* check recovery.conf
-* create a .pgpass file for access from the master
+* change `postgres.conf` as noted above
+* check `recovery.conf`
+* create a `.pgpass` file for access from the master
 
 2.  backup...let's try rsync  
 Copy the standby's .conf files somewhere they won't be overwritten
 
 stop the master
 then on the master server, use rsync:
-rsync -av /path/to/pgdata/dir/* ip.of.standby.server:/path/to/pgdata/dir/
+`rsync -av /path/to/pgdata/dir/* ip.of.standby.server:/path/to/pgdata/dir/`
 
 -a means archive, which preserves symbolic links, among other things.  
 -v is verbose.
