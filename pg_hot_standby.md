@@ -53,10 +53,12 @@ wal_keep_segments = 16
 * verify your changes (check both dirs)
 	- `SELECT pg_switch_xlog();`
 * create your replication user:
+
     `CREATE ROLE rbatty WITH LOGIN REPLICATION PASSWORD 'deckard';`
     or
     `CREATE USER rbatty WITH REPLICATION PASSWORD 'deckdard';`
 * change pg_hba.conf as required for access
+
     `host   replication     rbatty          192.168.247.1/24        md5`
 	- database name has to be "replication"!
 	- reload
@@ -78,6 +80,7 @@ restore_command = 'cp /var/lib/postgresql/archive/%f %p'
 * copy the standby's .conf files somewhere they won't be overwritten
 * stop the master
 * copy master $PDATA over to standby, e.g.
+
 `rsync -av /path/to/pgdata/dir/* ip.of.standby.server:/path/to/pgdata/dir/`
 
 -a means archive, which preserves symbolic links, among other things.  
