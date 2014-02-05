@@ -33,60 +33,60 @@ Relevant GUCs: standby
 Checklist
 ---------
 1. Set up your configs.   Alter or create the following:
- ```
- pg_hba.conf
- postgres.conf
- recovery.conf (only on the standby)
- ```
+	```
+	pg_hba.conf
+	postgres.conf
+	recovery.conf (only on the standby)
+	```
 
- On the master:
+	On the master:
 
- * change postgres.conf as noted above
- ```
- wal_level = hot_standby
- archive_mode = on
- archive_command = 'cp %p /var/lib/postgresql/archive/%f'
- max_wal_senders = 3 #so we overdid it in our tests
- wal_keep_segments = 16
- ```
- * restart
- * verify your changes (check both dirs)
+	* change postgres.conf as noted above
+	```
+	wal_level = hot_standby
+	archive_mode = on
+	archive_command = 'cp %p /var/lib/postgresql/archive/%f'
+	max_wal_senders = 3 #so we overdid it in our tests
+	wal_keep_segments = 16
+	```
+	* restart
+	* verify your changes (check both dirs)
 	- `SELECT pg_switch_xlog();`
- * create your replication user:
+	* create your replication user:
 
-    `CREATE ROLE rbatty WITH LOGIN REPLICATION PASSWORD 'deckard';`
-    or
-    `CREATE USER rbatty WITH REPLICATION PASSWORD 'deckdard';`
- * change pg_hba.conf as required for access
+	   `CREATE ROLE rbatty WITH LOGIN REPLICATION PASSWORD 'deckard';`
+	   or
+	   `CREATE USER rbatty WITH REPLICATION PASSWORD 'deckdard';`
+	* change pg_hba.conf as required for access
 
-    `host   replication     rbatty          192.168.247.1/24        md5`
+	   `host   replication     rbatty          192.168.247.1/24        md5`
 	- database name has to be "replication"!
 	- reload
 
- On the standby:
+	On the standby:
 
- * change `postgres.conf` as noted above
- `hot_standby = on`
- * create `recovery.conf`
- ```
- standby_mode = on
- primary_conninfo = 'host=192.168.247.181 port=5444 user=rbatty'
- restore_command = 'cp /var/lib/postgresql/archive/%f %p'
- ```
- * create a `.pgpass` file for access from the master (an exercise left to the reader)
+	* change `postgres.conf` as noted above
+	`hot_standby = on`
+	* create `recovery.conf`
+	```
+	standby_mode = on
+	primary_conninfo = 'host=192.168.247.181 port=5444 user=rbatty'
+	restore_command = 'cp /var/lib/postgresql/archive/%f %p'
+	```
+	* create a `.pgpass` file for access from the master (an exercise left to the reader)
 
 1.  Take your base backup of the master...let's try rsync  
 
- * copy the standby's .conf files somewhere they won't be overwritten
- * stop the master
- * copy master $PDATA over to standby, e.g.
+	* copy the standby's .conf files somewhere they won't be overwritten
+	* stop the master
+	* copy master $PDATA over to standby, e.g.
 
- `rsync -av /path/to/pgdata/dir/* ip.of.standby.server:/path/to/pgdata/dir/`
+	`rsync -av /path/to/pgdata/dir/* ip.of.standby.server:/path/to/pgdata/dir/`
 
- -a means archive, which preserves symbolic links, among other things.  
- -v is verbose.
+	-a means archive, which preserves symbolic links, among other things.  
+	-v is verbose.
 
- You can also use -e ssh option to rsync.
+	You can also use -e ssh option to rsync.
 
 1.  You've now overwritten the configs on your standby;  copy them back from the safe place you stored them in the previous step.
 
@@ -105,12 +105,10 @@ Check if SR is working:
 
  Note that it's highly unlikely the wal segment name will match on a production instance.
 
-1.  Check the status of the standby:
-
+1.  Check the status of the standby:  
  `SELECT pg_is_in_recovery();`  
  Should be 't'
 
-1.  Check the status on the master:
- `SELECT * FROM pg_stat_replication;`
-
+1.  Check the status on the master:  
+ `SELECT * FROM pg_stat_replication;`  
  This, combined with \watch, can be very educational.
